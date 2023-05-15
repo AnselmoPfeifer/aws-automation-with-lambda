@@ -1,5 +1,5 @@
 lambda.zip
-terraform/.terraform.lock.hcl
-terraform/.terraform/
-terraform/terraform.tfstate
-terraform/terraform.tfstate.backup
+terraform/exercise/.terraform.lock.hcl
+terraform/exercise/.terraform/
+terraform/exercise/terraform.tfstate
+terraform/exercise/terraform.tfstate.backup
