@@ -106,23 +106,12 @@ resource "aws_lambda_function" "this" {
   }
 }
 
-resource "aws_cloudwatch_event_rule" "event_rule" {
-  name = "Daily"
-  description = "Run every day"
-  schedule_expression = "rate(1 day)"
-}
-
-resource "aws_cloudwatch_event_target" "event_target" {
-  arn  = aws_lambda_function.this.arn
-  rule = aws_cloudwatch_event_rule.event_rule.name
-}
-
 resource "aws_lambda_permission" "lambda_permission" {
   statement_id = "AllowExecutionFromCloudWatch"
   action = "lambda:InvokeFunction"
   function_name = aws_lambda_function.this.function_name
   principal = "events.amazonaws.com"
-  source_arn = aws_cloudwatch_event_rule.event_rule.arn
+  source_arn = aws_cloudwatch_event_rule.cloudwatch_event_rule.arn
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
