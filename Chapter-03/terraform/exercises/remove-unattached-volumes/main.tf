@@ -128,9 +128,9 @@ resource "aws_lambda_permission" "lambda_permission" {
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
-  name = "PruneSnapshotInstancesNightly"
-  description = "Rule to Prune Ec2 Snapshot nightly"
-  schedule_expression = "cron(55 23 * * * ? *)"
+  name = "PruneUnattachedVolumesNightly"
+  description = "Rule to Prune Unattached Volumes nightly"
+  schedule_expression = "cron(55 23 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {
