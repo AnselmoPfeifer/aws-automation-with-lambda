@@ -1,11 +1,11 @@
 # Automating AWS with Lambda, Python, and Boto3
 
 # Elastic Compute Cloud (EC2)
-On this chapter I worked with Function Lambda to apply the:
-- [Stopping EC2 Instances Nightly based on AWS Cloudwatch rules](../stop-ec2/scripts/stop-ec2.py)
-- [Backing Up EC2 Instances](../backup-ec2/scripts/backup-ec2.py)
-- [Removing Unattached EBS Volumes](../remove-unattached-volumes/scripts/remove-unattached-volumes.py')
-- Deregistering Old AMIs
+- [EC2-Creating-Instance](EC2-Creating-Instance/scripts/run.py)
+- [Stopping EC2 Instances Nightly based on AWS Cloudwatch rules](EC2-Stopping-Instances/scripts/run.py)
+- [Backing Up EC2 Instances](EC2-Backup-Instances/scripts/run.py)
+- [Removing Unattached EBS Volumes](EC2-Removing-Unattached-Volumes/scripts/run.py)
+- [Deregistering Old AMIs](EC2-Deregistering-Old-AMIs/scripts/run.py)
 - AWS Instance Scheduler
 * HANDS-ON LAB > Enabling AWS VPC Flow Logs with Automation
 
@@ -17,10 +17,10 @@ On this chapter I worked with Function Lambda to apply the:
 - pip install -r requirements.txt
 -
 ## Terraform commands
-- export TF_PATH=terraform/exercise
+- export TF_PATH=<Folder Name>
 - terraform -chdir=${TF_PATH} init
-- terraform -chdir=${TF_PATH} plan -var=subnet_id=<subnet_id>
-- terraform -chdir=${TF_PATH} apply -var=subnet_id=<subnet_id>
+- terraform -chdir=${TF_PATH} plan -var=lambda_name=<lambda-name>
+- terraform -chdir=${TF_PATH} apply -var=lambda_name=<lambda-name>
 
 * Invoking aws lambda using aws cli:
 ```shell
