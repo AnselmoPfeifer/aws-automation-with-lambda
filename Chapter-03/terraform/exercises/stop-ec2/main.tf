@@ -46,8 +46,8 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "CreateEc2InstancePolicy"
-  description = "Creating an EC2 Instance with Lambda in AWS"
+  name = "LambdaPolicy"
+  description = "Stopping an EC2 Instance with Lambda in AWS"
   path = "/"
   policy = <<EOF
 {
@@ -101,9 +101,6 @@ resource "aws_lambda_function" "this" {
 
   environment {
     variables = {
-      AMI = "ami-0889a44b331db0194"
-      INSTANCE_TYPE = "t2.micro"
-      KEY_NAME = "labLambdaEc2"
       SUBNET_ID = var.subnet_id
     }
   }

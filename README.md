@@ -14,7 +14,7 @@
 
 * Invoking aws lambda using aws cli:
 ```shell
-export LAMBDA_NAME='stop-ec2-instances'
+export LAMBDA_NAME='backup-ec2-instances'
 aws lambda invoke --invocation-type Event \
   --function-name ${LAMBDA_NAME} \
   --invocation-type Event \

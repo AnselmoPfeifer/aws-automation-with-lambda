@@ -46,8 +46,8 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "CreateEc2InstancePolicy"
-  description = "Creating an EC2 Instance with Lambda in AWS"
+  name = "LambdaPolicy"
+  description = "Stopping an EC2 Instance with Lambda in AWS"
   path = "/"
   policy = <<EOF
 {
@@ -85,8 +85,8 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = "lab-creating-ec2"
-  description      = "Creating an EC2 Instance with Lambda in AWS"
+  function_name    = "lab-stopping-ec2"
+  description      = "Stopping an EC2 Instance with Lambda in AWS"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
   handler          = "instance.lambda_handler"
