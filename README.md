@@ -6,7 +6,7 @@
 - [Backing Up EC2 Instances](EC2-Backup-Instances/scripts/run.py)
 - [Removing Unattached EBS Volumes](EC2-Removing-Unattached-Volumes/scripts/run.py)
 - [Deregistering Old AMIs](EC2-Deregistering-Old-AMIs/scripts/run.py)
-- AWS Instance Scheduler
+- [AWS Instance Scheduler](EC2-Instance-Scheduler/scripts/run.py)
 * HANDS-ON LAB > Enabling AWS VPC Flow Logs with Automation
 
 
