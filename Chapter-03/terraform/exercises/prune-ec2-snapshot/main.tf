@@ -66,13 +66,12 @@ resource "aws_iam_policy" "iam_policy" {
 			"Effect": "Allow",
 			"Action": [
                 "ec2:CreateSnapshot",
-                "ec2:DeleteSnapshot",
                 "ec2:CreateTags",
-                "ec2:DescribeInstances",
+                "ec2:DeleteSnapshot",
+                "ec2:Describe",
                 "ec2:ModifySnapshotAttribute",
                 "ec2:ResetSnapshotAttribute",
-                "ec2:DescribeRegions",
-                "ec2:DescribeVolumes"
+                "ec2:DescribeRegions"
 			],
 			"Resource": "*"
 		}
@@ -132,7 +131,7 @@ resource "aws_lambda_permission" "lambda_permission" {
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
   name = "BackupEC2InstancesNightly"
   description = "Rule to Backup EC2 instances nightly"
-  schedule_expression = "cron(55 23 * * ? *)"
+  schedule_expression = "cron(55 05 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {

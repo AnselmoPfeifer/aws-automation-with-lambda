@@ -57,12 +57,12 @@ resource "aws_iam_policy" "iam_policy" {
 			"Sid": "VisualEditor0",
 			"Effect": "Allow",
 			"Action": [
-				"logs:CreateLogStream",
 				"ec2:DescribeRegions",
                 "ec2:DescribeInstances",
+                "ec2:StopInstances",
 				"logs:CreateLogGroup",
 				"logs:PutLogEvents",
-                "ec2:StopInstances"
+                "logs:CreateLogStream"
 			],
 			"Resource": "*"
 		}

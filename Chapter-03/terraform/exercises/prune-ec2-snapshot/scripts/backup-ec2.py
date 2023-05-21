@@ -6,12 +6,11 @@ STOP_LIST = []
 
 
 def lambda_handler(event, context):
-    print(f'INFO: starting process to backup EC2 instances!')
+    print(f'INFO: starting process to shutdown EC2 instances nightly!')
     regions = [region['RegionName']
                for region in CLIENT.describe_regions()['Regions']]
 
     for region in regions:
-        print(f'INFO: checking instances with backup tag on region {region}')
         ec2 = boto3.resource('ec2', region_name=region)
         instances = ec2.instances.filter(
             Filters=[
