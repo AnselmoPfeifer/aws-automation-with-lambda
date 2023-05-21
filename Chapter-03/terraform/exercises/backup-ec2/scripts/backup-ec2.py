@@ -2,7 +2,6 @@ import boto3
 from datetime import datetime
 
 CLIENT = boto3.client('ec2')
-STOP_LIST = []
 
 
 def lambda_handler(event, context):

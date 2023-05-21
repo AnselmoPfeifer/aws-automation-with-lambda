@@ -47,7 +47,7 @@ EOF
 
 resource "aws_iam_policy" "iam_policy" {
   name = "LambdaPolicy"
-  description = "Backup an EC2 Instance with Lambda in AWS"
+  description = "Prune Snapshot with Lambda in AWS"
   path = "/"
   policy = <<EOF
 {
@@ -68,10 +68,9 @@ resource "aws_iam_policy" "iam_policy" {
                 "ec2:CreateSnapshot",
                 "ec2:CreateTags",
                 "ec2:DeleteSnapshot",
-                "ec2:Describe",
+                "ec2:Describe*",
                 "ec2:ModifySnapshotAttribute",
-                "ec2:ResetSnapshotAttribute",
-                "ec2:DescribeRegions"
+                "ec2:ResetSnapshotAttribute"
 			],
 			"Resource": "*"
 		}
@@ -96,11 +95,11 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = "backup-ec2-instances"
-  description      = "Backup EC2 Instances Nightly"
+  function_name    = "prune-snapshot"
+  description      = "Prune Snapshot EC2 Nightly"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
-  handler          = "backup-ec2.lambda_handler"
+  handler          = "prune-snapshot.lambda_handler"
   timeout          = 60
   memory_size      = 128
   publish          = true
@@ -129,9 +128,9 @@ resource "aws_lambda_permission" "lambda_permission" {
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
-  name = "BackupEC2InstancesNightly"
-  description = "Rule to Backup EC2 instances nightly"
-  schedule_expression = "cron(55 05 * * ? *)"
+  name = "PruneSnapshotInstancesNightly"
+  description = "Rule to Prune Ec2 Snapshot nightly"
+  schedule_expression = "cron(0/5 * * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {
