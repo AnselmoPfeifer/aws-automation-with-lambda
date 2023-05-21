@@ -1,5 +1,15 @@
 # Automating AWS with Lambda, Python, and Boto3
 
+# Elastic Compute Cloud (EC2)
+On this chapter I worked with Function Lambda to apply the:
+- [Stopping EC2 Instances Nightly based on AWS Cloudwatch rules](../stop-ec2/scripts/stop-ec2.py)
+- [Backing Up EC2 Instances](../backup-ec2/scripts/backup-ec2.py)
+- [Removing Unattached EBS Volumes](../remove-unattached-volumes/scripts/remove-unattached-volumes.py')
+- Deregistering Old AMIs
+- AWS Instance Scheduler
+* HANDS-ON LAB > Enabling AWS VPC Flow Logs with Automation
+
+
 ## Virtual environment
 - Create Virtual env: python3 -m venv venv
 - source venv/bin/activate
@@ -22,6 +32,6 @@ aws lambda invoke --invocation-type Event \
   response.json
 ```
 
-- [CHAPTER 1](Chapter-01/README.md)
+- [CHAPTER 1](01-Introduction/README.md)
 - [CHAPTER 2](Chapter-02/README.md)
 - [CHAPTER 3](Chapter-03/README.md)

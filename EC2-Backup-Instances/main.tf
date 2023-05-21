@@ -13,7 +13,7 @@ resource "random_string" "random" {
 }
 
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket  = "lambda-${var.lambda_name}-${random_string.random.result}"
+  bucket  = "aws-lambda-labs-${random_string.random.result}"
 }
 
 resource "aws_s3_object" "object" {
@@ -28,7 +28,7 @@ resource "aws_s3_object" "object" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda-execution-role-${var.lambda_name}"
+  name = "lambda_execution_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -46,8 +46,8 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "Lambda-Policy-${var.lambda_name}"
-  description = "Used on Lambda function: ${var.lambda_name}"
+  name = "LambdaPolicy"
+  description = "Backup an EC2 Instance with Lambda in AWS"
   path = "/"
   policy = <<EOF
 {
@@ -66,11 +66,13 @@ resource "aws_iam_policy" "iam_policy" {
 			"Effect": "Allow",
 			"Action": [
                 "ec2:CreateSnapshot",
-                "ec2:CreateTags",
                 "ec2:DeleteSnapshot",
-                "ec2:Describe*",
+                "ec2:CreateTags",
+                "ec2:DescribeInstances",
                 "ec2:ModifySnapshotAttribute",
-                "ec2:ResetSnapshotAttribute"
+                "ec2:ResetSnapshotAttribute",
+                "ec2:DescribeRegions",
+                "ec2:DescribeVolumes"
 			],
 			"Resource": "*"
 		}
@@ -80,7 +82,7 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "lambda_policy_attachment" {
-  name       = "lambda-policy-attachment-${var.lambda_name}"
+  name       = "lambda_policy_attachment"
   roles      = [
     aws_iam_role.lambda_role.name
   ]
@@ -95,11 +97,11 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = var.lambda_name
-  description      = "Remove unattached volumes Nightly"
+  function_name    = "backup-ec2-instances"
+  description      = "Backup EC2 Instances Nightly"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
-  handler          = "${var.lambda_name}.lambda_handler"
+  handler          = "run.lambda_handler"
   timeout          = 60
   memory_size      = 128
   publish          = true
@@ -108,32 +110,22 @@ resource "aws_lambda_function" "this" {
   source_code_hash = data.archive_file.file.output_base64sha256
 }
 
-resource "aws_cloudwatch_event_rule" "event_rule" {
-  name = "Daily"
-  description = "Run every day"
-  schedule_expression = "rate(1 day)"
-}
-
-resource "aws_cloudwatch_event_target" "event_target" {
-  arn  = aws_lambda_function.this.arn
-  rule = aws_cloudwatch_event_rule.event_rule.name
-}
-
 resource "aws_lambda_permission" "lambda_permission" {
   statement_id = "AllowExecutionFromCloudWatch"
   action = "lambda:InvokeFunction"
   function_name = aws_lambda_function.this.function_name
   principal = "events.amazonaws.com"
-  source_arn = aws_cloudwatch_event_rule.event_rule.arn
+  source_arn = aws_cloudwatch_event_rule.cloudwatch_event_rule.arn
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
-  name = "PruneSnapshotInstancesNightly"
-  description = "Rule to Prune Ec2 Snapshot nightly"
-  schedule_expression = "cron(55 23 * * * ? *)"
+  name = "BackupEC2InstancesNightly"
+  description = "Rule to Backup EC2 instances nightly"
+  schedule_expression = "cron(55 23 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {
   arn  = aws_lambda_function.this.arn
   rule = aws_cloudwatch_event_rule.cloudwatch_event_rule.name
 }
+

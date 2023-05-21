@@ -99,7 +99,7 @@ resource "aws_lambda_function" "this" {
   description      = "Remove unattached volumes Nightly"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
-  handler          = "${var.lambda_name}.lambda_handler"
+  handler          = "run.lambda_handler"
   timeout          = 60
   memory_size      = 128
   publish          = true

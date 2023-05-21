@@ -47,32 +47,22 @@ EOF
 
 resource "aws_iam_policy" "iam_policy" {
   name = "LambdaPolicy"
-  description = "Backup an EC2 Instance with Lambda in AWS"
+  description = "Stopping an EC2 Instance with Lambda in AWS"
   path = "/"
   policy = <<EOF
 {
 	"Version": "2012-10-17",
 	"Statement": [
 		{
+			"Sid": "VisualEditor0",
 			"Effect": "Allow",
 			"Action": [
-				"logs:CreateLogStream",
-				"logs:CreateLogGroup",
-				"logs:PutLogEvents"
-			],
-			"Resource": "arn:aws:logs:*:*:*"
-		},
-		{
-			"Effect": "Allow",
-			"Action": [
-                "ec2:CreateSnapshot",
-                "ec2:DeleteSnapshot",
-                "ec2:CreateTags",
+				"ec2:DescribeRegions",
                 "ec2:DescribeInstances",
-                "ec2:ModifySnapshotAttribute",
-                "ec2:ResetSnapshotAttribute",
-                "ec2:DescribeRegions",
-                "ec2:DescribeVolumes"
+                "ec2:StopInstances",
+				"logs:CreateLogGroup",
+				"logs:PutLogEvents",
+                "logs:CreateLogStream"
 			],
 			"Resource": "*"
 		}
@@ -97,17 +87,23 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = "backup-ec2-instances"
-  description      = "Backup EC2 Instances Nightly"
+  function_name    = "stop-ec2-instances"
+  description      = "Stopping EC2 Instances Nightly"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
-  handler          = "backup-ec2.lambda_handler"
+  handler          = "run.lambda_handler"
   timeout          = 60
   memory_size      = 128
   publish          = true
 
   filename      = "lambda.zip"
   source_code_hash = data.archive_file.file.output_base64sha256
+
+  environment {
+    variables = {
+      SUBNET_ID = var.subnet_id
+    }
+  }
 }
 
 resource "aws_lambda_permission" "lambda_permission" {
@@ -119,13 +115,12 @@ resource "aws_lambda_permission" "lambda_permission" {
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
-  name = "BackupEC2InstancesNightly"
-  description = "Rule to Backup EC2 instances nightly"
-  schedule_expression = "cron(55 23 * * ? *)"
+  name = "EC2InstancesNightly"
+  description = "Rule to shutdown EC2 instances nightly"
+  schedule_expression = "cron(50 23 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {
   arn  = aws_lambda_function.this.arn
   rule = aws_cloudwatch_event_rule.cloudwatch_event_rule.name
 }
-

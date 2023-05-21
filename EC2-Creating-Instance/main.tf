@@ -1,12 +1,27 @@
 data "archive_file" "file" {
   type        = "zip"
-  source_dir  = "../scripts"
-  output_path = "../lambda.zip"
+  source_dir  = "scripts"
+  output_path = "lambda.zip"
+}
+
+resource "random_string" "random" {
+  length    = 4
+  special = false
+  upper = false
+  lower = true
+  override_special = "/@£$"
+}
+
+resource "aws_s3_bucket" "s3_bucket" {
+  bucket  = "aws-lambda-labs-${random_string.random.result}"
 }
 
 resource "aws_s3_object" "object" {
-  depends_on = [data.archive_file.file]
-  bucket = var.lambda_s3_bucket
+  depends_on = [
+    data.archive_file.file,
+    aws_s3_bucket.s3_bucket
+  ]
+  bucket = aws_s3_bucket.s3_bucket.id
   key    = "functions/lambda.zip"
   source = data.archive_file.file.output_path
   etag   = filemd5(data.archive_file.file.output_path)
@@ -30,13 +45,37 @@ resource "aws_iam_role" "lambda_role" {
 EOF
 }
 
+resource "aws_iam_policy" "iam_policy" {
+  name = "LambdaPolicy"
+  description = "Stopping an EC2 Instance with Lambda in AWS"
+  path = "/"
+  policy = <<EOF
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "VisualEditor0",
+			"Effect": "Allow",
+			"Action": [
+				"logs:CreateLogStream",
+				"ec2:RunInstances",
+				"logs:CreateLogGroup",
+				"logs:PutLogEvents"
+			],
+			"Resource": "*"
+		}
+	]
+}
+EOF
+}
+
 resource "aws_iam_policy_attachment" "lambda_policy_attachment" {
   name       = "lambda_policy_attachment"
   roles      = [
     aws_iam_role.lambda_role.name
   ]
 
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  policy_arn = aws_iam_policy.iam_policy.arn
 }
 
 resource "aws_lambda_function" "this" {
@@ -46,17 +85,26 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = "example_lambda"
-  description = "This is first test with lambda"
+  function_name    = "lab-stopping-ec2"
+  description      = "Stopping an EC2 Instance with Lambda in AWS"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
-  handler          = "hello.lambda_handler"
+  handler          = "run.lambda_handler"
   timeout          = 60
   memory_size      = 128
   publish          = true
 
-  filename      = "../lambda.zip"
+  filename      = "lambda.zip"
   source_code_hash = data.archive_file.file.output_base64sha256
+
+  environment {
+    variables = {
+      AMI = "ami-0889a44b331db0194"
+      INSTANCE_TYPE = "t2.micro"
+      KEY_NAME = "labLambdaEc2"
+      SUBNET_ID = var.subnet_id
+    }
+  }
 }
 
 resource "aws_cloudwatch_event_rule" "event_rule" {

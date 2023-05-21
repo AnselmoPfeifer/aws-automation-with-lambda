@@ -13,7 +13,7 @@ resource "random_string" "random" {
 }
 
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket  = "aws-lambda-labs-${random_string.random.result}"
+  bucket  = "lambda-${var.lambda_name}-${random_string.random.result}"
 }
 
 resource "aws_s3_object" "object" {
@@ -28,7 +28,7 @@ resource "aws_s3_object" "object" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda_execution_role"
+  name = "lambda-execution-role-${var.lambda_name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -46,21 +46,28 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "LambdaPolicy"
-  description = "Stopping an EC2 Instance with Lambda in AWS"
+  name = "Lambda-Policy-${var.lambda_name}"
+  description = "Used on Lambda function: ${var.lambda_name}"
   path = "/"
   policy = <<EOF
 {
 	"Version": "2012-10-17",
 	"Statement": [
 		{
-			"Sid": "VisualEditor0",
 			"Effect": "Allow",
 			"Action": [
 				"logs:CreateLogStream",
-				"ec2:RunInstances",
 				"logs:CreateLogGroup",
 				"logs:PutLogEvents"
+			],
+			"Resource": "arn:aws:logs:*:*:*"
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+                "ec2:DeregisterImage",
+                "ec2:DescribeRegions",
+                "ec2:DescribeImages"
 			],
 			"Resource": "*"
 		}
@@ -70,7 +77,7 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "lambda_policy_attachment" {
-  name       = "lambda_policy_attachment"
+  name       = "lambda-policy-attachment-${var.lambda_name}"
   roles      = [
     aws_iam_role.lambda_role.name
   ]
@@ -85,26 +92,17 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = "lab-stopping-ec2"
-  description      = "Stopping an EC2 Instance with Lambda in AWS"
+  function_name    = var.lambda_name
+  description      = "Unregistering Old AMIs Nightly"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
-  handler          = "instance.lambda_handler"
+  handler          = "run.lambda_handler"
   timeout          = 60
   memory_size      = 128
   publish          = true
 
   filename      = "lambda.zip"
   source_code_hash = data.archive_file.file.output_base64sha256
-
-  environment {
-    variables = {
-      AMI = "ami-0889a44b331db0194"
-      INSTANCE_TYPE = "t2.micro"
-      KEY_NAME = "labLambdaEc2"
-      SUBNET_ID = var.subnet_id
-    }
-  }
 }
 
 resource "aws_cloudwatch_event_rule" "event_rule" {
@@ -124,4 +122,15 @@ resource "aws_lambda_permission" "lambda_permission" {
   function_name = aws_lambda_function.this.function_name
   principal = "events.amazonaws.com"
   source_arn = aws_cloudwatch_event_rule.event_rule.arn
+}
+
+resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
+  name = "UnregisteringOldAMIs"
+  description = "Rule to Unregistering Old AMIs"
+  schedule_expression = "cron(55 23 * * ? *)"
+}
+
+resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {
+  arn  = aws_lambda_function.this.arn
+  rule = aws_cloudwatch_event_rule.cloudwatch_event_rule.name
 }

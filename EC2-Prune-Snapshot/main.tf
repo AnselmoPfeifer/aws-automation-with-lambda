@@ -13,7 +13,7 @@ resource "random_string" "random" {
 }
 
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket  = "aws-lambda-labs-${random_string.random.result}"
+  bucket  = "lambda-${var.lambda_name}-${random_string.random.result}"
 }
 
 resource "aws_s3_object" "object" {
@@ -28,7 +28,7 @@ resource "aws_s3_object" "object" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda_execution_role"
+  name = "lambda-execution-role-${var.lambda_name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -46,23 +46,31 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "LambdaPolicy"
-  description = "Stopping an EC2 Instance with Lambda in AWS"
+  name = "Lambda-Policy-${var.lambda_name}"
+  description = "Used on Lambda function: ${var.lambda_name}"
   path = "/"
   policy = <<EOF
 {
 	"Version": "2012-10-17",
 	"Statement": [
 		{
-			"Sid": "VisualEditor0",
 			"Effect": "Allow",
 			"Action": [
-				"ec2:DescribeRegions",
-                "ec2:DescribeInstances",
-                "ec2:StopInstances",
+				"logs:CreateLogStream",
 				"logs:CreateLogGroup",
-				"logs:PutLogEvents",
-                "logs:CreateLogStream"
+				"logs:PutLogEvents"
+			],
+			"Resource": "arn:aws:logs:*:*:*"
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+                "ec2:CreateSnapshot",
+                "ec2:CreateTags",
+                "ec2:DeleteSnapshot",
+                "ec2:Describe*",
+                "ec2:ModifySnapshotAttribute",
+                "ec2:ResetSnapshotAttribute"
 			],
 			"Resource": "*"
 		}
@@ -72,7 +80,7 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "lambda_policy_attachment" {
-  name       = "lambda_policy_attachment"
+  name       = "lambda-policy-attachment-${var.lambda_name}"
   roles      = [
     aws_iam_role.lambda_role.name
   ]
@@ -87,23 +95,28 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = "stop-ec2-instances"
-  description      = "Stopping EC2 Instances Nightly"
+  function_name    = var.lambda_name
+  description      = "Remove unattached volumes Nightly"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
-  handler          = "stop-ec2.lambda_handler"
+  handler          = "run.lambda_handler"
   timeout          = 60
   memory_size      = 128
   publish          = true
 
   filename      = "lambda.zip"
   source_code_hash = data.archive_file.file.output_base64sha256
+}
 
-  environment {
-    variables = {
-      SUBNET_ID = var.subnet_id
-    }
-  }
+resource "aws_cloudwatch_event_rule" "event_rule" {
+  name = "Daily"
+  description = "Run every day"
+  schedule_expression = "rate(1 day)"
+}
+
+resource "aws_cloudwatch_event_target" "event_target" {
+  arn  = aws_lambda_function.this.arn
+  rule = aws_cloudwatch_event_rule.event_rule.name
 }
 
 resource "aws_lambda_permission" "lambda_permission" {
@@ -111,13 +124,13 @@ resource "aws_lambda_permission" "lambda_permission" {
   action = "lambda:InvokeFunction"
   function_name = aws_lambda_function.this.function_name
   principal = "events.amazonaws.com"
-  source_arn = aws_cloudwatch_event_rule.cloudwatch_event_rule.arn
+  source_arn = aws_cloudwatch_event_rule.event_rule.arn
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
-  name = "EC2InstancesNightly"
-  description = "Rule to shutdown EC2 instances nightly"
-  schedule_expression = "cron(50 23 * * ? *)"
+  name = "PruneSnapshotInstancesNightly"
+  description = "Rule to Prune Ec2 Snapshot nightly"
+  schedule_expression = "cron(55 23 * * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {
