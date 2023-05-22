@@ -9,6 +9,8 @@
 - [AWS Instance Scheduler](EC2-Instance-Scheduler/scripts/run.py)
 The Instance Scheduler on AWS solution automates the starting and stopping of 
 Amazon Elastic Compute Cloud (Amazon EC2) and Amazon Relational Database Service (Amazon RDS) instances.
+Based on this [CloudFormation Template](https://raw.githubusercontent.com/linuxacademy/content-lambda-boto3/master/EC2/AWS-Instance-Scheduler/aws-instance-scheduler.json)
+
 * HANDS-ON LAB > Enabling AWS VPC Flow Logs with Automation
 
 
