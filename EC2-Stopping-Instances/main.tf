@@ -28,7 +28,7 @@ resource "aws_s3_object" "object" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda_execution_role"
+  name = "lambda-execution-role-${var.name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -46,15 +46,13 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "LambdaPolicy"
-  description = "Stopping an EC2 Instance with Lambda in AWS"
+  name = "lambda-policy-${var.name}"
   path = "/"
   policy = <<EOF
 {
 	"Version": "2012-10-17",
 	"Statement": [
 		{
-			"Sid": "VisualEditor0",
 			"Effect": "Allow",
 			"Action": [
 				"ec2:DescribeRegions",
@@ -72,7 +70,7 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "lambda_policy_attachment" {
-  name       = "lambda_policy_attachment"
+  name       = "lambda-policy-attachment-${var.name}"
   roles      = [
     aws_iam_role.lambda_role.name
   ]
@@ -87,8 +85,8 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = "stop-ec2-instances"
-  description      = "Stopping EC2 Instances Nightly"
+  function_name    = var.name
+  description      = "Function lambda related to ${var.name}"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
   handler          = "run.lambda_handler"
@@ -98,12 +96,6 @@ resource "aws_lambda_function" "this" {
 
   filename      = "lambda.zip"
   source_code_hash = data.archive_file.file.output_base64sha256
-
-  environment {
-    variables = {
-      SUBNET_ID = var.subnet_id
-    }
-  }
 }
 
 resource "aws_lambda_permission" "lambda_permission" {
@@ -115,8 +107,8 @@ resource "aws_lambda_permission" "lambda_permission" {
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
-  name = "EC2InstancesNightly"
-  description = "Rule to shutdown EC2 instances nightly"
+  name = var.name
+  description = "Rule about ${var.name}"
   schedule_expression = "cron(50 23 * * ? *)"
 }
 

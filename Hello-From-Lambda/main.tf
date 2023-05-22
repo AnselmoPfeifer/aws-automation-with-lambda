@@ -1,19 +1,34 @@
 data "archive_file" "file" {
   type        = "zip"
-  source_dir  = "../scripts"
-  output_path = "../lambda.zip"
+  source_dir  = "scripts"
+  output_path = "lambda.zip"
+}
+
+resource "random_string" "random" {
+  length    = 4
+  special = false
+  upper = false
+  lower = true
+  override_special = "/@£$"
+}
+
+resource "aws_s3_bucket" "s3_bucket" {
+  bucket  = "aws-lambda-labs-${random_string.random.result}"
 }
 
 resource "aws_s3_object" "object" {
-  depends_on = [data.archive_file.file]
-  bucket = var.lambda_s3_bucket
+  depends_on = [
+    data.archive_file.file,
+    aws_s3_bucket.s3_bucket
+  ]
+  bucket = aws_s3_bucket.s3_bucket.id
   key    = "functions/lambda.zip"
   source = data.archive_file.file.output_path
   etag   = filemd5(data.archive_file.file.output_path)
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda_execution_role"
+  name = "lambda-execution-role-${var.name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -31,7 +46,7 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "lambda_policy_attachment" {
-  name       = "lambda_policy_attachment"
+  name       = "lambda-policy-attachment-${var.name}"
   roles      = [
     aws_iam_role.lambda_role.name
   ]
@@ -46,8 +61,8 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = "example_lambda"
-  description = "This is first test with lambda"
+  function_name    = var.name
+  description      = "Function lambda related to ${var.name}"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
   handler          = "run.lambda_handler"
@@ -55,7 +70,7 @@ resource "aws_lambda_function" "this" {
   memory_size      = 128
   publish          = true
 
-  filename      = "../lambda.zip"
+  filename      = "lambda.zip"
   source_code_hash = data.archive_file.file.output_base64sha256
 }
 
