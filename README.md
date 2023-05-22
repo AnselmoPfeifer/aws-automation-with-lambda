@@ -7,6 +7,8 @@
 - [Removing Unattached EBS Volumes](EC2-Removing-Unattached-EBS-Volumes/scripts/run.py)
 - [Deregistering Old AMIs](EC2-Deregistering-Old-AMIs/scripts/run.py)
 - [AWS Instance Scheduler](EC2-Instance-Scheduler/scripts/run.py)
+The Instance Scheduler on AWS solution automates the starting and stopping of 
+Amazon Elastic Compute Cloud (Amazon EC2) and Amazon Relational Database Service (Amazon RDS) instances.
 * HANDS-ON LAB > Enabling AWS VPC Flow Logs with Automation
 
 
