@@ -19,14 +19,14 @@
 ## Terraform commands
 - export TF_PATH=<Folder Name>
 - terraform -chdir=${TF_PATH} init
-- terraform -chdir=${TF_PATH} plan -var=lambda_name=<lambda-name>
-- terraform -chdir=${TF_PATH} apply -var=lambda_name=<lambda-name>
+- terraform -chdir=${TF_PATH} plan -var=name=<lambda-name>
+- terraform -chdir=${TF_PATH} apply -var=name=<lambda-name>
 
 * Invoking aws lambda using aws cli:
 ```shell
-export LAMBDA_NAME='backup-ec2-instances'
+export NAME=<lambda name>
 aws lambda invoke --invocation-type Event \
-  --function-name ${LAMBDA_NAME} \
+  --function-name ${NAME} \
   --invocation-type Event \
   --payload '{}' \
   response.json

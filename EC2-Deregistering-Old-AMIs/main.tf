@@ -127,7 +127,7 @@ resource "aws_lambda_permission" "lambda_permission" {
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
   name = var.name
   description = "Rule about ${var.name}"
-  schedule_expression = "cron(55 23 * * * ? *)"
+  schedule_expression = "cron(55 23 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {
