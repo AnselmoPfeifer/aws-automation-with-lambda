@@ -4,7 +4,7 @@
 - [EC2-Creating-Instance](EC2-Creating-Instance/scripts/run.py)
 - [Stopping EC2 Instances Nightly based on AWS Cloudwatch rules](EC2-Stopping-Instances/scripts/run.py)
 - [Backing Up EC2 Instances](EC2-Backup-Instances/scripts/run.py)
-- [Removing Unattached EBS Volumes](EC2-Removing-Unattached-Volumes/scripts/run.py)
+- [Removing Unattached EBS Volumes](EC2-Removing-Unattached-EBS-Volumes/scripts/run.py)
 - [Deregistering Old AMIs](EC2-Deregistering-Old-AMIs/scripts/run.py)
 - [AWS Instance Scheduler](EC2-Instance-Scheduler/scripts/run.py)
 * HANDS-ON LAB > Enabling AWS VPC Flow Logs with Automation
