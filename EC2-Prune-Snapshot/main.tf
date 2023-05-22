@@ -13,7 +13,7 @@ resource "random_string" "random" {
 }
 
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket  = "lambda-${var.lambda_name}-${random_string.random.result}"
+  bucket  = "aws-lambda-labs-${random_string.random.result}"
 }
 
 resource "aws_s3_object" "object" {
@@ -28,7 +28,7 @@ resource "aws_s3_object" "object" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda-execution-role-${var.lambda_name}"
+  name = "lambda-execution-role-${var.name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -46,8 +46,7 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "Lambda-Policy-${var.lambda_name}"
-  description = "Used on Lambda function: ${var.lambda_name}"
+  name = "lambda-policy-${var.name}"
   path = "/"
   policy = <<EOF
 {
@@ -80,7 +79,7 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "lambda_policy_attachment" {
-  name       = "lambda-policy-attachment-${var.lambda_name}"
+  name       = "lambda-policy-attachment-${var.name}"
   roles      = [
     aws_iam_role.lambda_role.name
   ]
@@ -95,8 +94,8 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = var.lambda_name
-  description      = "Remove unattached volumes Nightly"
+  function_name    = var.name
+  description      = "Function lambda related to ${var.name}"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
   handler          = "run.lambda_handler"
@@ -128,9 +127,9 @@ resource "aws_lambda_permission" "lambda_permission" {
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
-  name = "PruneSnapshotInstancesNightly"
-  description = "Rule to Prune Ec2 Snapshot nightly"
-  schedule_expression = "cron(55 23 * * * ? *)"
+  name = var.name
+  description = "Rule about ${var.name}"
+  schedule_expression = "cron(55 23 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {
