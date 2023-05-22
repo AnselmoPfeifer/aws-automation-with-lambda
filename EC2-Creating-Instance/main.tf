@@ -46,8 +46,7 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "LambdaPolicy-${var.name}"
-  description = "Backup an EC2 Instance with Lambda in AWS"
+  name = "lambda-policy-${var.name}"
   path = "/"
   policy = <<EOF
 {

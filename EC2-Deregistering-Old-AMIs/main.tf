@@ -13,7 +13,7 @@ resource "random_string" "random" {
 }
 
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket  = "lambda-${var.name}-${random_string.random.result}"
+  bucket  = "aws-lambda-labs-${random_string.random.result}"
 }
 
 resource "aws_s3_object" "object" {
@@ -46,8 +46,7 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "Lambda-Policy-${var.name}"
-  description = "Used on Lambda function: ${var.name}"
+  name = "lambda-policy-${var.name}"
   path = "/"
   policy = <<EOF
 {
@@ -93,7 +92,7 @@ resource "aws_lambda_function" "this" {
   ]
 
   function_name    = var.name
-  description = "Function lambda related to ${var.name}"
+  description      = "Function lambda related to ${var.name}"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
   handler          = "run.lambda_handler"
