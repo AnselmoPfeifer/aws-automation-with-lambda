@@ -27,8 +27,6 @@ Navigate to CloudWatch.
 Create a VPC, and check the Flow Logs was enable.
 ```
 
-
-
 * Virtual environment
 - Create Virtual env: python3 -m venv venv
 - source venv/bin/activate
