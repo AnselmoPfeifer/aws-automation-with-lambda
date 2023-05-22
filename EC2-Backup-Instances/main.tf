@@ -28,7 +28,7 @@ resource "aws_s3_object" "object" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda_execution_role"
+  name = "lambda-execution-role-${var.name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -46,7 +46,7 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "LambdaPolicy"
+  name = "LambdaPolicy-${var.name}"
   description = "Backup an EC2 Instance with Lambda in AWS"
   path = "/"
   policy = <<EOF
@@ -82,7 +82,7 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "lambda_policy_attachment" {
-  name       = "lambda_policy_attachment"
+  name       = "lambda-policy-attachment-${var.name}"
   roles      = [
     aws_iam_role.lambda_role.name
   ]
@@ -97,8 +97,8 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda_role
   ]
 
-  function_name    = "backup-ec2-instances"
-  description      = "Backup EC2 Instances Nightly"
+  function_name    = var.name
+  description      = "Function lambda related to ${var.name}"
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.8"
   handler          = "run.lambda_handler"
@@ -119,7 +119,7 @@ resource "aws_lambda_permission" "lambda_permission" {
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_rule" {
-  name = "BackupEC2InstancesNightly"
+  name = "EventRule-${var.name}"
   description = "Rule to Backup EC2 instances nightly"
   schedule_expression = "cron(55 23 * * ? *)"
 }
