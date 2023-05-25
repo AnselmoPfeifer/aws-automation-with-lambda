@@ -28,7 +28,7 @@ Create a VPC, and check the Flow Logs was enable.
 ```
 - [DynamoDB-Managing-Tables](DynamoDB-Managing-Tables/README.md)
 - [S3-Resizing-Images](S3-Resizing-Images/scripts/run.py)
-  - pip install Pillow -t S3-Resizing-Images/scripts/
+  - ppip install -t S3-Resizing-Images/scripts/ --platform manylinux2014_x86_64 --implementation cp --python 3.8 --only-binary=:all: --upgrade Pillow
 
 * Virtual environment
 - Create Virtual env: python3 -m venv venv

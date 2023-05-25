@@ -72,16 +72,25 @@ resource "aws_iam_policy" "iam_policy" {
 		{
 			"Effect": "Allow",
 			"Action": [
-                "s3:GetObject"
+                "s3:GetObject",
+                "s3:ListBucket"
+
 			],
-			"Resource": "${aws_s3_bucket.s3_bucket_source.arn}/*"
+			"Resource": [
+              "${aws_s3_bucket.s3_bucket_source.arn}",
+              "${aws_s3_bucket.s3_bucket_source.arn}/*"
+            ]
 		},
 		{
 			"Effect": "Allow",
 			"Action": [
-                "s3:PutObject"
+                "s3:PutObject",
+                "s3:ListBucket"
 			],
-			"Resource": "${aws_s3_bucket.s3_bucket_target.arn}/*"
+			"Resource": [
+              "${aws_s3_bucket.s3_bucket_target.arn}",
+              "${aws_s3_bucket.s3_bucket_target.arn}/*"
+            ]
 		}
 	]
 }
