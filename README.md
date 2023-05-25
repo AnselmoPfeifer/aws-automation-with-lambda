@@ -48,3 +48,6 @@ aws lambda invoke --invocation-type Event \
   --payload '{}' \
   response.json
 ```
+
+## Reference:
+- https://github.com/linuxacademy/content-lambda-boto3
