@@ -26,7 +26,8 @@ Navigate to CloudWatch.
 ------------------------------------------------
 Create a VPC, and check the Flow Logs was enable.
 ```
-
+- [DynamoDB-Managing-Tables](DynamoDB-Managing-Tables/README.md)
+- [S3-Resizing-Images](S3-Resizing-Images/scripts/run.py)
 * Virtual environment
 - Create Virtual env: python3 -m venv venv
 - source venv/bin/activate

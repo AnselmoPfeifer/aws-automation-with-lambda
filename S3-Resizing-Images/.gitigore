@@ -1,3 +1,4 @@
+!scripts/run.py
 .terraform/
 .terraform.lock.hcl
 terraform.tfstate

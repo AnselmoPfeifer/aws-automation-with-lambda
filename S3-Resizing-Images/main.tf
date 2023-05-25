@@ -114,23 +114,27 @@ resource "aws_lambda_function" "this" {
 
   filename      = "lambda.zip"
   source_code_hash = data.archive_file.file.output_base64sha256
+  environment {
+    variables = {
+      DEST_BUCKET = aws_s3_bucket.s3_bucket_target.id
+    }
+  }
 }
 
-#resource "aws_s3_bucket_notification" "bucket_notification" {
-#  bucket = aws_s3_bucket.s3_bucket_source.id
-#
-#  lambda_function {
-#    events = ["s3:ObjectCreated:*"]
-#    lambda_function_arn = aws_lambda_function.this.arn
-#  }
-#
-#  depends_on = [aws_lambda_function.this, aws_s3_bucket.s3_bucket_source]
-#}
-#
-#resource "aws_lambda_permission" "lambda_permission" {
-#  statement_id = "AllowS3Invoke"
-#  action = "lambda:InvokeFunction"
-#  function_name = aws_lambda_function.this.function_name
-#  principal = "events.amazonaws.com"
-#  source_arn = "arn:aws:s3:::${aws_s3_bucket.s3_bucket_source.id}"
-#}
+resource "aws_lambda_permission" "lambda_permission" {
+  depends_on = [ aws_lambda_function.this ]
+  statement_id = "AllowExecutionFromS3Bucket"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.this.arn
+  principal = "s3.amazonaws.com"
+  source_arn = aws_s3_bucket.s3_bucket_source.arn
+}
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.s3_bucket_source.id
+
+  lambda_function {
+    events = [ "s3:ObjectCreated:Put" ]
+    lambda_function_arn = aws_lambda_function.this.arn
+  }
+}

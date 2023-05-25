@@ -9,7 +9,7 @@ SIZE = 128, 128
 
 
 def generate_thumbnail(source_path, dest_path):
-    print(f'INFO: generating thumbnail image')
+    print(f'INFO: generating thumbnail image!')
     with Image.open(source_path) as image:
         image.thumbnail(SIZE)
         image.save(dest_path)
