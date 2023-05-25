@@ -28,7 +28,11 @@ Create a VPC, and check the Flow Logs was enable.
 ```
 - [DynamoDB-Managing-Tables](DynamoDB-Managing-Tables/README.md)
 - [S3-Resizing-Images](S3-Resizing-Images/scripts/run.py)
-  - ppip install -t S3-Resizing-Images/scripts/ --platform manylinux2014_x86_64 --implementation cp --python 3.8 --only-binary=:all: --upgrade Pillow
+  - pip install -t S3-Resizing-Images/scripts/ --platform manylinux2014_x86_64 --implementation cp --python 3.8 --only-binary=:all: --upgrade Pillow
+- Importing-CSV-Into-DynamoDB
+  - To test we need to upload the movies.csv file  to s3 bucket named: aws-lambda-csv-data
+  - Check the data was imported to DynamoDB table!
+
 
 * Virtual environment
 - Create Virtual env: python3 -m venv venv
