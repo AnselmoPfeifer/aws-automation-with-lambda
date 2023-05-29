@@ -10,7 +10,7 @@
 The Instance Scheduler on AWS solution automates the starting and stopping of 
 Amazon Elastic Compute Cloud (Amazon EC2) and Amazon Relational Database Service (Amazon RDS) instances.
 Based on this [CloudFormation Template](EC2-Instance-Scheduler/aws-instance-scheduler.json)
-- Enabling AWS VPC Flow Logs with Automation
+- [Enabling AWS VPC Flow Logs with Automation](VPC-Flow-Logs-With-Automation/scripts/run.py)
 ```shell
 Create CloudWatch rule for `CreateVpc` API call.
 Navigate to CloudWatch.
@@ -29,9 +29,11 @@ Create a VPC, and check the Flow Logs was enable.
 - [DynamoDB-Managing-Tables](DynamoDB-Managing-Tables/README.md)
 - [S3-Resizing-Images](S3-Resizing-Images/scripts/run.py)
   - pip install -t S3-Resizing-Images/scripts/ --platform manylinux2014_x86_64 --implementation cp --python 3.8 --only-binary=:all: --upgrade Pillow
-- Importing-CSV-Into-DynamoDB
+- [DynamoDB-Importing-CSV](DynamoDB-Importing-CSV/scripts/run.py)
   - To test we need to upload the movies.csv file  to s3 bucket named: aws-lambda-csv-data
   - Check the data was imported to DynamoDB table!
+- [SQS-Triggering-Lambda](SQS-Triggering-Lambda/scripts/run.py)
+  - To Test run the 
 
 
 * Virtual environment
