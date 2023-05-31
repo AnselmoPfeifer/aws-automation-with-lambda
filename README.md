@@ -61,3 +61,4 @@ aws lambda invoke --invocation-type Event \
 
 ## Reference:
 - https://github.com/linuxacademy/content-lambda-boto3
+- https://github.com/linuxacademy/la-aws-security_specialty
