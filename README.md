@@ -34,7 +34,7 @@ Create a VPC, and check the Flow Logs was enable.
   - Check the data was imported to DynamoDB table!
 - [SQS-Triggering-Lambda](SQS-Triggering-Lambda/scripts/run.py)
 - [EC2-Automating-Resource-Tagging](EC2-Automating-Resource-Tagging/README.md)
-
+- [IAM-Rotating-Access-key](IAM-Rotating-Access-key/README.md)
 
 
 * Virtual environment
