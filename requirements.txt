@@ -2,3 +2,6 @@ botocore
 boto3
 Pillow
 Faker
+botostubs
+boto3-stubs
+boto3-stubs-lite
