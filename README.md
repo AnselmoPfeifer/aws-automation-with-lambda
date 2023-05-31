@@ -7,9 +7,9 @@
 - [Removing Unattached EBS Volumes](EC2-Removing-Unattached-EBS-Volumes/scripts/run.py)
 - [Deregistering Old AMIs](EC2-Deregistering-Old-AMIs/scripts/run.py)
 - [AWS Instance Scheduler](EC2-Instance-Scheduler/aws-instance-scheduler.json)
-The Instance Scheduler on AWS solution automates the starting and stopping of 
-Amazon Elastic Compute Cloud (Amazon EC2) and Amazon Relational Database Service (Amazon RDS) instances.
-Based on this [CloudFormation Template](EC2-Instance-Scheduler/aws-instance-scheduler.json)
+  - The Instance Scheduler on AWS solution automates the starting and stopping of 
+    Amazon Elastic Compute Cloud (Amazon EC2) and Amazon Relational Database Service (Amazon RDS) instances.
+    Based on this [CloudFormation Template](EC2-Instance-Scheduler/aws-instance-scheduler.json)
 - [Enabling AWS VPC Flow Logs with Automation](VPC-Flow-Logs-With-Automation/scripts/run.py)
 ```shell
 Create CloudWatch rule for `CreateVpc` API call.
@@ -33,7 +33,8 @@ Create a VPC, and check the Flow Logs was enable.
   - To test we need to upload the movies.csv file  to s3 bucket named: aws-lambda-csv-data
   - Check the data was imported to DynamoDB table!
 - [SQS-Triggering-Lambda](SQS-Triggering-Lambda/scripts/run.py)
-  - To Test run the 
+- [EC2-Automating-Resource-Tagging](EC2-Automating-Resource-Tagging/README.md)
+
 
 
 * Virtual environment
