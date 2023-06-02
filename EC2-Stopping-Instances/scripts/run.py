@@ -2,7 +2,7 @@ import boto3
 
 CLIENT = boto3.client('ec2')
 # Added here the instances ids to check and stop
-STOP_LIST = []
+INSTANCES = []
 
 
 def lambda_handler(event, context):
@@ -24,6 +24,6 @@ def lambda_handler(event, context):
         )
 
         for instance in instances:
-            if instance.id in STOP_LIST:
+            if instance.id in INSTANCES:
                 print(f'INFO: stopping instance: {instance.id}')
                 instance.stop()
